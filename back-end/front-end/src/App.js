@@ -46,7 +46,7 @@ class App extends Component {
         "content-type": "application/json"
       }
     }
-    await fetch('http://localhost:8080/client', init)
+    await fetch('https://hairco.herokuapp.com/client', init)
     .then((response) => response.json())
     .then(async (data)=>{
       await this.setState({
