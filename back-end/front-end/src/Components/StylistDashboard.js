@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Doughnut,Bar  } from 'react-chartjs-2';
+import ChartDisplay from './ChartDisplay'
 
 export default class StylistDashboard extends Component {
     state={
@@ -11,9 +12,8 @@ export default class StylistDashboard extends Component {
             sales: 10
         },
         chartData:{
-            labels: ["Remaining Monthly Goal", "Amount Sold"],
+            labels: ["Remaining Monthly Goal","Amount Sold"],
             datasets: [{
-                label: '# of Votes',
                 data: [100-10, 10],
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
@@ -29,6 +29,7 @@ export default class StylistDashboard extends Component {
     }
 
    componentDidMount(){
+       console.log(this.state)
        let  url = 'https://hairco.herokuapp.com'
         if(localStorage.token !== undefined && localStorage.token !== null){
             //Add token to request header
@@ -41,7 +42,7 @@ export default class StylistDashboard extends Component {
                     })}
                 res.json()
                 .then(data=>{this.setState({
-                    data:data
+                    data: data
                     })
                 })
             })
@@ -57,25 +58,44 @@ export default class StylistDashboard extends Component {
 
       monthlyChange = (e)=>{
           this.setState({
-              monthlyGoal: e.target.value
+              goals:{
+                monthlyGoal: Number(e.target.value),
+                sales: this.state.goals.sales
+              }
+              
           })
+          console.log(this.state)
       }
 
-      submitMonthly = (e) =>{
-          e.preventDefault();
-          let init = { 
+    submitMonthly = (e) =>{
+        e.preventDefault();
+        let init = { 
             method:'POST',
             body:JSON.stringify(this.state.monthlyGoal),
             headers:{
                 "content-type": "application/json"}
                 }
-          fetch('/goals', init)
-          .then(res=>console.log(res))
+        this.setState({
+            chartData:{
+                labels: {...this.state.chartData.labels},
+                datasets: [{
+                    data: [this.state.goals.monthlyGoal,this.state.goals.sales],
+                    backgroundColor: [...this.state.chartData.datasets[0].backgroundColor],
+                    borderColor: [...this.state.chartData.datasets[0].borderColor],
+                    borderWidth: 1
+                }]
+            }
+        })
+        // fetch('/goals', init)
+        // .then(res=>console.log(res))
       }
 
       saleChange=(e)=>{
           this.setState({
-              sales: e.target.value
+              goals:{
+                monthlyGoal: this.state.goals.monthlyGoal,
+                sales: Number(e.target.value)
+                }
           })
       }
 
@@ -89,16 +109,23 @@ export default class StylistDashboard extends Component {
                 'content-type':'application/json'
                 }
             }
-            fetch('/sales', init)
-            .then(res => console.log(res))
+            this.setState({
+                chartData:{
+                    labels: {...this.state.chartData.labels},
+                    datasets: [{
+                        data: [this.state.goals.monthlyGoal,this.state.goals.sales],
+                        backgroundColor: [...this.state.chartData.datasets[0].backgroundColor],
+                        borderColor: [...this.state.chartData.datasets[0].borderColor],
+                        borderWidth: 1
+                    }]
+                }
+            })
+            console.log(this.state)
+            // fetch('/sales', init)
+            // .then(res => console.log(res))
       }
 
   render() {
-      let goalCalc = (data) =>{ 
-          let value = data.sales/data.monthlyGoal*100 + '%'
-        return value
-      }
-       
     return (
       <div className='dashboard'>
         <h1> Welcome to your dashboard {this.state.data.name} </h1>
@@ -122,13 +149,10 @@ export default class StylistDashboard extends Component {
         </div>
         <div>
             <h2> Goal </h2>
-            {goalCalc(this.state.goals)} completed
+            {/* {goalCalc(this.state.goals)} completed */}
         </div>
         <div>
-            <Doughnut
-                data={this.state.chartData}
-                options={{}}
-                />
+            <ChartDisplay chartData={this.state.chartData}/>
         </div>
       </div>
     )
