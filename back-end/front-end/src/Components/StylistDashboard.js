@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import { Doughnut,Bar  } from 'react-chartjs-2';
 
 export default class StylistDashboard extends Component {
     state={
@@ -9,6 +9,22 @@ export default class StylistDashboard extends Component {
         goals:{
             monthlyGoal: 100,
             sales: 10
+        },
+        chartData:{
+            labels: ["Remaining Monthly Goal", "Amount Sold"],
+            datasets: [{
+                label: '# of Votes',
+                data: [100-10, 10],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255,99,132,1)',
+                    'rgba(54, 162, 235, 1)'
+                ],
+                borderWidth: 1
+            }]
         }
     }
 
@@ -24,10 +40,9 @@ export default class StylistDashboard extends Component {
                         auth:true
                     })}
                 res.json()
-                .then(async data=>{ await this.setState({
+                .then(data=>{this.setState({
                     data:data
                     })
-                    console.log(this.state)
                 })
             })
             .catch((err) => {
@@ -75,7 +90,7 @@ export default class StylistDashboard extends Component {
                 }
             }
             fetch('/sales', init)
-            .then(res=>console.log(res))
+            .then(res => console.log(res))
       }
 
   render() {
@@ -83,6 +98,7 @@ export default class StylistDashboard extends Component {
           let value = data.sales/data.monthlyGoal*100 + '%'
         return value
       }
+       
     return (
       <div className='dashboard'>
         <h1> Welcome to your dashboard {this.state.data.name} </h1>
@@ -107,6 +123,12 @@ export default class StylistDashboard extends Component {
         <div>
             <h2> Goal </h2>
             {goalCalc(this.state.goals)} completed
+        </div>
+        <div>
+            <Doughnut
+                data={this.state.chartData}
+                options={{}}
+                />
         </div>
       </div>
     )

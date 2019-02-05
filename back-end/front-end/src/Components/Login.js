@@ -13,7 +13,8 @@ export default class Login extends Component {
     }
 
     handleSubmit = async (e) => {
-        let url = 'https://hairco.herokuapp.com'
+        let url = 'http://localhost:8080'
+        // 'https://hairco.herokuapp.com'
         e.preventDefault();
         await this.setState ({
             username: this.usernameRef.current.value,

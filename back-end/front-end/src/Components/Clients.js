@@ -24,12 +24,6 @@ export default class Clients extends Component {
     return (
       <div className='clientPage'>
         <MapContainer clients={this.props.clients} stylists={this.props.stylists} history={this.props.history}/>
-        {/* <h1>
-            Stylists in your area:
-        </h1>
-        <div className='stylists'>
-            {this.props.stylists.map((data) => stylistData(data))}
-        </div> */}
       </div>
     )
   }
